@@ -5,7 +5,7 @@ using LinearAlgebra, Statistics, Optim, ProgressMeter
 include("models.jl")
 include("filter.jl")
 include("smoother.jl")
-#include("em.jl")
+include("em.jl")
 include("resampling.jl")
 include("particle.jl")
 include("bare_particle.jl")
