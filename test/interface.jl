@@ -60,7 +60,7 @@
 
         Q = state_covariance(arh,θ0)
 
-        @test Q == fill(σ^2,1,1)
+        @test Q == fill(ση^2,1,1)
 
         G = state_input_matrix(arh,θ0)
 
@@ -80,6 +80,6 @@
 
         Θ = state_noise_transformation_matrix(arh,θ0)
 
-        @test Θ = fill(1.0,1,1)
+        @test Θ == fill(1.0,1,1)
     end
 end
