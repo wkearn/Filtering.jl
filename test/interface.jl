@@ -87,3 +87,23 @@
         @test Θ == fill(1.0,1,1)
     end
 end
+
+@testset "Kalman filtering and smoothing" begin
+    arh = ARH(β)
+    
+    X,Y = Filtering.simulate(arh,θ0,1000)
+
+    kf = kalman_filter(arh,θ0,Y,fill([1.0],length(Y)))
+
+    ks = kalman_smoother(arh,θ0,kf)
+end
+
+@testset "Particle filtering and smoothing" begin
+    arh = ARH(β)
+    
+    X,Y = Filtering.simulate(arh,θ0,1000)
+
+    kf = kalman_filter(arh,θ0,Y,fill([1.0],length(Y)))
+
+    ks = kalman_smoother(arh,θ0,kf)
+end
