@@ -1,6 +1,15 @@
 using Distributions
 
-export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution
+export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution,
+    initial_mean,
+    initial_covariance,
+    state_transition_matrix,
+    state_covariance,
+    state_input_matrix,
+    observation_matrix,
+    observation_covariance,
+    observation_input_matrix,
+    state_noise_transformation_matrix
 
 abstract type StateSpaceModel end
 
@@ -56,6 +65,18 @@ function observation_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
 
     MvNormal(H*x + Γ*u,R)
 end
+
+### Linear model interface
+
+initial_mean(m::LinearStateSpaceModel,θ) = m.μ(θ)
+initial_covariance(m::LinearStateSpaceModel,θ) = m.Σ0(θ)
+state_transition_matrix(m::LinearStateSpaceModel,θ) = m.F(θ)
+state_covariance(m::LinearStateSpaceModel,θ) = m.Q(θ)
+state_input_matrix(m::LinearStateSpaceModel,θ) = m.G(θ)
+observation_matrix(m::LinearStateSpaceModel,θ) = m.H(θ)
+observation_covariance(m::LinearStateSpaceModel,θ) = m.R(θ)
+observation_input_matrix(m::LinearStateSpaceModel,θ) = m.Γ(θ)
+state_noise_transformation_matrix(m::LinearStateSpaceModel,θ) = m.Θ(θ)
 
 struct LinearStateSpaceGradient
     dF
