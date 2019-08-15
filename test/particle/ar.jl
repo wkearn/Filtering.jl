@@ -1,7 +1,7 @@
 # Particle filtering an AR(1) model with measurement noise
 
-# TODO: Reexport Distribution
-using Filtering, Distributions, Test, Random, StatsBase
+
+
 
 μ0(θ) = MvNormal([θ[1]/(1-tanh(θ[2]))],fill(θ[3]^2/(1-tanh(θ[2])^2),1,1))
 f(x,t,θ) = MvNormal(θ[1] .+ tanh(θ[2])*x,fill(θ[3]^2,1,1))
