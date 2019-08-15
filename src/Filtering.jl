@@ -8,11 +8,11 @@ include("smoother.jl")
 include("em.jl")
 include("resampling.jl")
 include("particle.jl")
-include("bare_particle.jl")
+include("score_particle.jl")
+#include("bare_particle.jl")
 #include("gradient_particle.jl") # This may be outdated
 #include("online_particle.jl")
 #include("threads.jl")
-include("particle_smoothing.jl")
 include("optimizers.jl")
 
 # TODO: These models should be moved to a FilteringModels package
