@@ -57,3 +57,17 @@ function ARH(θ,β)
     
     LinearStateSpaceModel(F, Q, G, H, R, Γ, Θ, μ, Σ0)
 end
+
+function ARH(β)
+    μ(θ) = fill(θ[1]/(1-tanh(θ[2])),1)
+    Σ0(θ)= fill(θ[3]^2/(1-tanh(θ[2]^2)),1,1)
+    F(θ) = fill(tanh(θ[2]),1,1)
+    Q(θ) = fill(θ[3]^2,1,1)
+    G(θ) = fill(θ[1],1,1)
+    H(θ) = fill(β[2],1,1)
+    R(θ) = fill(θ[4]^2,1,1)
+    Γ(θ) = fill(β[1],1,1)
+    Θ(θ) = fill(1.0,1,1)    
+    
+    LinearStateSpaceModel(F, Q, G, H, R, Γ, Θ, μ, Σ0)
+end
