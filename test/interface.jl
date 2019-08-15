@@ -118,5 +118,8 @@ end
 
     pf = particle_filter(arh,θ0,Y,100,fill([1.0],N))
 
-    ps = particle_smoother(arh,θ0,pf,1)
+    B = 2
+    ps = particle_smoother(arh,θ0,Y,pf,B,fill([1.0],N))
+
+    @test size(ps) == (1,N+1,B)
 end
