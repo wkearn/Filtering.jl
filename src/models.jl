@@ -1,6 +1,6 @@
 using Distributions
 
-export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution,
+export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution, proposal_distribution, weight_function,
     initial_mean,
     initial_covariance,
     state_transition_matrix,
@@ -64,6 +64,14 @@ function observation_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
     R = m.R(θ0)
 
     MvNormal(H*x + Γ*u,R)
+end
+
+function proposal_distribution(m::LinearStateSpaceModel,x,y,u,t,θ)
+    transition_distribution(m,x,u,t,θ)
+end
+
+function weight_function(m::LinearStateSpaceModel,x,y,u,t,θ)
+    0.0
 end
 
 ### Linear model interface
