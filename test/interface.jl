@@ -16,6 +16,8 @@
 
 β = [0.0;1.0]
 
+N = 1000
+
 @testset "LinearStateSpaceModel" begin
     @testset "Generic model interface" begin
         arh = ARH(β)
@@ -93,17 +95,20 @@ end
     
     X,Y = Filtering.simulate(arh,θ0,1000)
 
+    @test length(X) == N+1
+    @test length(Y) == N
+
     kf = kalman_filter(arh,θ0,Y,fill([1.0],length(Y)))
 
     ks = kalman_smoother(arh,θ0,kf)
 end
 
 @testset "Particle filtering and smoothing" begin
-    arh = ARH(β)
+    arh = ARH(β)    
     
-    X,Y = Filtering.simulate(arh,θ0,1000)
+    X,Y = Filtering.simulate(arh,θ0,N,fill([1.0],length(Y)))
 
-    kf = kalman_filter(arh,θ0,Y,fill([1.0],length(Y)))
+    pf = particle_filter(arh,θ0,Y,fill([1.0],length(Y)),100)
 
-    ks = kalman_smoother(arh,θ0,kf)
+    ps = particle_smoother(arh,θ0,pf,1)
 end
