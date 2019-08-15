@@ -80,7 +80,7 @@ function step(ps::ScoreParticleContainer,m::ProposalStateSpaceModel,y,t,θ,λ=0.
     ps
 end
 
-function particle_filter(m::ProposalStateSpaceModel,Y,θ,N;λ=0.95,Nthreshold=0.5,sample_function=resample_stratified,verbose=false)
+function score_filter(m::ProposalStateSpaceModel,Y,θ,N;λ=0.95,Nthreshold=0.5,sample_function=resample_stratified,verbose=false)
 
     T = length(Y)
 
