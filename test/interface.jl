@@ -47,6 +47,14 @@ N = 1000
         y1 = rand(g)
 
         # TODO: Proposal distributions for LinearStateSpaceModels (#4)
+        q = proposal_distribution(arh,x0,y1,u1,1,θ0)
+
+        @test mean(q) == φ*x0 .+ δ
+        @test cov(q) == fill(ση^2,1,1)
+
+        ξ = weight_function(arh,x0,y1,u1,1,θ0)
+
+        @test ξ == 0.0
     end
 
     @testset "Linear model interface" begin
