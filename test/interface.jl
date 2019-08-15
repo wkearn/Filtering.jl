@@ -106,9 +106,9 @@ end
 @testset "Particle filtering and smoothing" begin
     arh = ARH(β)    
     
-    X,Y = Filtering.simulate(arh,θ0,N,fill([1.0],length(Y)))
+    X,Y = Filtering.simulate(arh,θ0,N,fill([1.0],N))
 
-    pf = particle_filter(arh,θ0,Y,fill([1.0],length(Y)),100)
+    pf = particle_filter(arh,θ0,Y,fill([1.0],N),100)
 
     ps = particle_smoother(arh,θ0,pf,1)
 end
