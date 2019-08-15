@@ -2,9 +2,6 @@ using DiffResults, ForwardDiff, Distributions, StatsBase, StatsFuns
 
 export ScoreParticleContainer
 
-abstract type ParticleContainer <: AbstractArray{Float64,1}
-end
-
 struct ScoreParticleContainer <: ParticleContainer
     X # Particles
     w # weights

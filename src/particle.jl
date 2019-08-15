@@ -5,6 +5,9 @@
 
 export particle_filter, particle_smoother
 
+abstract type ParticleContainer <: AbstractArray{Float64,1}
+end
+
 struct FilteringParticleContainer <: ParticleContainer
     X # Particles
     w # weights
