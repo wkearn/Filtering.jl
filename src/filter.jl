@@ -13,23 +13,23 @@ end
 
 """
 Apply a Kalman filter specified 
-by a LinearStateSpaceModel to a time series, `z`.
+by a LinearStateSpaceModel to a time series, `Y`.
 """
-function kalman_filter(m::LinearStateSpaceModel,z,u=fill([0.0],length(z)))
-    T = length(z)
+function kalman_filter(m::LinearStateSpaceModel,θ,Y,u=fill([0.0],length(Y)))
+    T = length(Y)
 
-    μ = m.μ
-    Σ0 = m.Σ0
-    F = m.F
-    G = m.G
-    Q = m.Q
+    μ = initial_mean(m,θ)
+    Σ0 = initial_covariance(m,θ)
+    F = state_transition_matrix(m,θ)
+    G = state_input_matrix(m,θ)
+    Q = state_covariance(m,θ)
     
-    Θ = m.Θ
+    Θ = state_noise_transformation_matrix(m,θ)
     Qp = Θ*Q*Θ'
 
-    H = m.H
-    R = m.R
-    Γ = m.Γ
+    H = observation_matrix(m,θ)
+    R = observation_covariance(m,θ)
+    Γ = observation_input_matrix(m,θ)
 
     
     d = length(μ)
@@ -43,7 +43,7 @@ function kalman_filter(m::LinearStateSpaceModel,z,u=fill([0.0],length(z)))
     K = fill(zeros(dt,d,d),T)
     ε = fill(zeros(dt,d),T)
     for t in 1:T
-        x1,P1,ε1,Σ1,K1,xf1,Pf1 = filter_step(z[t],u[t],F,G,Qp,H,Γ,R,xf[t],Pf[t])
+        x1,P1,ε1,Σ1,K1,xf1,Pf1 = filter_step(Y[t],u[t],F,G,Qp,H,Γ,R,xf[t],Pf[t])
         xp[t] = x1
         Pp[t] = P1
         ε[t]  = ε1
@@ -52,15 +52,15 @@ function kalman_filter(m::LinearStateSpaceModel,z,u=fill([0.0],length(z)))
         xf[t+1]= xf1
         Pf[t+1] = Pf1
     end
-    KalmanFilter(xf,xp,Pf,Pp,K,ε,Σ,z)
+    KalmanFilter(xf,xp,Pf,Pp,K,ε,Σ,Y)
 end
 
 """
 Apply a Kalman filter specified 
-by a LinearStateSpaceModel to a time series, `z`.
+by a LinearStateSpaceModel to a time series, `Y`.
 """
-function kalman_filter(m::TimeVariantLinearStateSpaceModel,z,u=fill([0.0],length(z)))
-    T = length(z)
+function kalman_filter(m::TimeVariantLinearStateSpaceModel,Y,u=fill([0.0],length(Y)))
+    T = length(Y)
 
     μ = m.μ
     Σ0 = m.Σ0
@@ -87,16 +87,16 @@ function kalman_filter(m::TimeVariantLinearStateSpaceModel,z,u=fill([0.0],length
     ε = fill(zeros(d),T)
     
     for t in 1:T
-        xp[t],Pp[t],ε[t],Σ[t],K[t],xf[t+1],Pf[t+1] = filter_step(z[t],u[t],F[t],G[t],Qp[t],H[t],Γ[t],R[t],xf[t],Pf[t])
+        xp[t],Pp[t],ε[t],Σ[t],K[t],xf[t+1],Pf[t+1] = filter_step(Y[t],u[t],F[t],G[t],Qp[t],H[t],Γ[t],R[t],xf[t],Pf[t])
     end
-    KalmanFilter(xf,xp,Pf,Pp,K,ε,Σ,z)
+    KalmanFilter(xf,xp,Pf,Pp,K,ε,Σ,Y)
 end
 
-function filter_step(z,u,F,G,Qp,H,Γ,R,xf0,Pf0)
+function filter_step(Y,u,F,G,Qp,H,Γ,R,xf0,Pf0)
     xp = F*xf0 + G*u
     Pp = F*Pf0*F' .+ Qp
         
-    ε = z .- H*xp .- Γ*u
+    ε = Y .- H*xp .- Γ*u
     Σ = H*Pp*H'.+R    
     K = Pp*H'*inv(Σ)
         

@@ -16,7 +16,7 @@ function kalman_smoother(m::LinearStateSpaceModel,z,u=fill([0.0],length(z)))
     kalman_smoother(kalman_filter(m,z,u),m)
 end
 
-function kalman_smoother(kf::KalmanFilter,m::LinearStateSpaceModel)
+function kalman_smoother(m::LinearStateSpaceModel,θ,kf::KalmanFilter)
     T = length(kf.xp)
     
     xf = kf.xf
@@ -25,8 +25,8 @@ function kalman_smoother(kf::KalmanFilter,m::LinearStateSpaceModel)
     Pp = kf.Pp
     K  = kf.K
     
-    F = m.F
-    H = m.H
+    F = state_transition_matrix(m,θ)
+    H = observation_matrix(m,θ)
     
     x = fill(xf[end],T+1)
     P = fill(Pf[end],T+1)

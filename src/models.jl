@@ -88,6 +88,18 @@ struct LinearStateSpaceGradient
     dΣ0
 end
 
+function simulate(m::LinearStateSpaceModel,θ,N,u=fill([0.0],N))
+    μ0 = initial_distribution(m,θ)
+    X = fill(rand(μ0),N+1)
+    Y = fill(rand(observation_distribution(m,X[1],u[1],0,θ)),N)
+    for t in 1:N
+        X[t+1] = rand(transition_distribution(m,X[t],u[t],t,θ))
+        Y[t] = rand(observation_distribution(m,X[t+1],u[t],t,θ))
+    end
+    X,Y
+end
+
+#=
 function simulate(m::LinearStateSpaceModel,N,u=fill([0.0],N))
     d = size(m.μ,1)
     n = size(m.H*m.μ,1)
@@ -99,6 +111,7 @@ function simulate(m::LinearStateSpaceModel,N,u=fill([0.0],N))
     end
     X,Y
 end
+=#
 
 """
 A linear, time-variant state space model
