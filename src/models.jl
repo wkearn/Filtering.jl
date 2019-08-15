@@ -1,6 +1,6 @@
 using Distributions
 
-export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel
+export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution
 
 abstract type StateSpaceModel end
 
@@ -31,6 +31,30 @@ struct LinearStateSpaceModel <: StateSpaceModel
     Θ
     μ
     Σ0
+end
+
+function initial_distribution(m::LinearStateSpaceModel,θ0)
+    μ0 = m.μ(θ0)
+    Σ0 = m.Σ0(θ0)
+
+    MvNormal(μ0,Σ0)
+end
+
+function transition_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
+    F = m.F(θ0)
+    G = m.G(θ0)
+    Q = m.Q(θ0)
+    Θ = m.Θ(θ0)
+
+    MvNormal(F*x+G*u,Θ*Q*Θ')
+end
+
+function observation_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
+    H = m.H(θ0)
+    Γ = m.Γ(θ0)
+    R = m.R(θ0)
+
+    MvNormal(H*x + Γ*u,R)
 end
 
 struct LinearStateSpaceGradient
