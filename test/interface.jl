@@ -28,14 +28,14 @@
 
         x0 = rand(μ0)
         
-        f  = transition_distribution(arh,x0,1,θ0)
+        f  = transition_distribution(arh,x0,[1.0],1,θ0)
 
-        @test mean(f) == φ*x0
+        @test mean(f) == φ*x0 .+ δ
         @test cov(f) == fill(ση^2,1,1)
 
         x1 = rand(f)
         
-        g  = observation_distribution(arh,x1,1,θ0)    
+        g  = observation_distribution(arh,x1,[1.0],1,θ0)    
 
         @test mean(g) == x1
         @test cov(g) == fill(σε^2,1,1)
