@@ -217,6 +217,12 @@ struct ProposalStateSpaceModel <: StateSpaceModel
     ProposalStateSpaceModel(μ0,f,g,q,ξ,dp=DP(f,g)) = new(μ0,f,g,q,ξ,dp)
 end
 
+initial_distribution(m::ProposalStateSpaceModel,θ) = m.μ0(θ)
+transition_distribution(m::ProposalStateSpaceModel,x,u,t,θ) = m.f(x,u,t,θ)
+observation_distribution(m::ProposalStateSpaceModel,x,u,t,θ) = m.g(x,u,t,θ)
+proposal_distribution(m::ProposalStateSpaceModel,x,y,u,t,θ) = m.q(x,y,u,t,θ)
+weight_function(m::ProposalStateSpaceModel,x,y,u,t,θ) = m.ξ(x,y,u,t,θ)
+
 function DP(f,g)
     function dp(dh,x,xn,y,t,θp)
         ForwardDiff.gradient!(dh,θ->logpdf(g(xn,t,θ),y) + logpdf(f(x,t,θ),xn),θp)
