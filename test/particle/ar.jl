@@ -1,8 +1,5 @@
 # Particle filtering an AR(1) model with measurement noise
 
-
-
-
 μ0(θ) = MvNormal([θ[1]/(1-tanh(θ[2]))],fill(θ[3]^2/(1-tanh(θ[2])^2),1,1))
 f(x,t,θ) = MvNormal(θ[1] .+ tanh(θ[2])*x,fill(θ[3]^2,1,1))
 g(x,t,θ) = MvNormal(x,fill(θ[4]^2,1,1))
@@ -33,6 +30,8 @@ mar = ProposalStateSpaceModel(μ0,f,g,q,ξ)
 σε = 1.0
 
 θ0 = [δ;atanh(φ);ση;σε]
+
+β  = [0.0;1.0]
 
 T = 1000
 N = 100
@@ -70,9 +69,9 @@ end
 
     @test X[1][1] == X1
     
-    arh = ARH(θ0,[0.0;1.0])
-    kf = kalman_filter(arh,Y,map(x->[x],ones(T)))
-    ks = kalman_smoother(kf,arh)
+    arh = ARH(β)
+    kf = kalman_filter(arh,θ0,Y,map(x->[x],ones(T)))
+    ks = kalman_smoother(arh,θ0,kf)
 end
 
 @testset "Running particle filter" begin
