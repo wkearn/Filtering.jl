@@ -230,8 +230,8 @@ function DP(f,g)
 end
 
 function BootstrapStateSpaceModel(μ0,f,g)
-    q(x,y,t,θ) = f(x,t,θ)
-    ξ(x,y,t,θ) = 0.0 # We do this in logarithms now
+    q(x,y,u,t,θ) = f(x,u,t,θ)
+    ξ(x,y,u,t,θ) = 0.0 # We do this in logarithms now
     ProposalStateSpaceModel(μ0,f,g,q,ξ)
 end
 
