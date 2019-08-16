@@ -79,7 +79,7 @@ end
 
     @test X[1][1] == X1
     
-    p1 = Filtering.particle_filter(mar,Y,θ0,N)
+    p1 = Filtering.particle_filter(mar,θ0,Y,N)
     #p2 = Filtering.filtering_filter(mar,Y,θ0,N)
 end
 
