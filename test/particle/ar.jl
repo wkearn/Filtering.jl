@@ -1,10 +1,10 @@
 # Particle filtering an AR(1) model with measurement noise
 
 μ0(θ) = MvNormal([θ[1]/(1-tanh(θ[2]))],fill(θ[3]^2/(1-tanh(θ[2])^2),1,1))
-f(x,t,θ) = MvNormal(θ[1] .+ tanh(θ[2])*x,fill(θ[3]^2,1,1))
-g(x,t,θ) = MvNormal(x,fill(θ[4]^2,1,1))
+f(x,u,t,θ) = MvNormal(θ[1] .+ tanh(θ[2])*x,fill(θ[3]^2,1,1))
+g(x,u,t,θ) = MvNormal(x,fill(θ[4]^2,1,1))
 
-function q(x,y,t,θ)
+function q(x,y,u,t,θ)
     δ = θ[1]
     φ = tanh(θ[2])
     σ = θ[3]
@@ -13,7 +13,7 @@ function q(x,y,t,θ)
     MvNormal((ν*σε^2 .+ y*σ^2)/(σε^2 + σ^2),fill((σ^2*σε^2)/(σ^2 + σε^2),1,1))
 end
 
-function ξ(x,y,t,θ)
+function ξ(x,y,u,t,θ)
     δ = θ[1]
     φ = tanh(θ[2])
     σ = θ[3]
