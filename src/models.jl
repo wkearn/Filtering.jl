@@ -235,12 +235,12 @@ function BootstrapStateSpaceModel(μ0,f,g)
     ProposalStateSpaceModel(μ0,f,g,q,ξ)
 end
 
-function simulate(m::ProposalStateSpaceModel,θ,N)
+function simulate(m::ProposalStateSpaceModel,θ,N,u=fill([0.0],N))
     X = fill(rand(m.μ0(θ)),N+1)
-    Y = fill(rand(m.g(X[1],1,θ)),N)
+    Y = fill(rand(m.g(X[1],u[1],1,θ)),N)
     for t in 1:N
-        X[t+1] =  rand(m.f(X[t],t,θ))
-        Y[t] = rand(m.g(X[t+1],t,θ))
+        X[t+1] =  rand(m.f(X[t],u[t],t,θ))
+        Y[t] = rand(m.g(X[t+1],u[t],t,θ))
     end
     X,Y
 end
