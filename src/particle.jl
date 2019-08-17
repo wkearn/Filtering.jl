@@ -2,6 +2,7 @@
 # Filtering distribution
 # This does not save trajectories, but saves weights and particles at each time step
 # Thus each corresponds to the filtering distribution.
+using Random
 
 export particle_filter, particle_smoother
 
@@ -39,7 +40,7 @@ propagate!(ps::FilteringParticleContainer,ξ,Σ,m,t,θ,y,u) = propagate!(Filteri
 function propagate!(::Type{FilteringParticleContainer},X,w,ℓ,ξ,Σ,m,t,θ,y,u)
     for i in eachindex(ξ)
         dq = proposal_distribution(m,X[:,i,t],y,u,t,θ)
-        X[:,i,t+1] = rand(dq)
+        rand!(dq,view(X,:,i,t+1))
 
         w[i,t+1] = w[i,t]
         w[i,t+1] += logpdf(transition_distribution(m,X[:,i,t],u,t,θ),X[:,i,t+1])
