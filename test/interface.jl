@@ -101,7 +101,7 @@ end
 @testset "Kalman filtering and smoothing" begin
     arh = ARH(β)
     
-    X,Y = Filtering.simulate(arh,θ0,1000)
+    X,Y = Filtering.simulate(arh,θ0,1000,fill([1.0],N))
 
     @test length(X) == N+1
     @test length(Y) == N
