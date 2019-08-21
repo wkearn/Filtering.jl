@@ -39,16 +39,17 @@ propagate!(ps::FilteringParticleContainer,ξ,Σ,m,t,θ,y,u) = propagate!(Filteri
 
 function propagate!(::Type{FilteringParticleContainer},X,w,ℓ,ξ,Σ,m,t,θ,y,u)
     for i in eachindex(ξ)
-        dq = proposal_distribution(m,X[:,i,t],y,u,t,θ)
-        rand!(dq,view(X,:,i,t+1))
+        #dq = proposal_distribution(m,X[:,i,t],y,u,t,θ)
+        #rand!(dq,view(X,:,i,t+1))
+        proposal_rand!(view(X,:,i,t+1),m,X[:,i,t],y,u,t,θ)
 
         w[i,t+1] = w[i,t]
-        w[i,t+1] += logpdf(transition_distribution(m,X[:,i,t],u,t,θ),X[:,i,t+1])
-        w[i,t+1] += logpdf(observation_distribution(m,X[:,i,t+1],u,t,θ),y)
+        w[i,t+1] += transition_logpdf(m,X[:,i,t+1],X[:,i,t],u,t,θ)
+        w[i,t+1] += observation_logpdf(m,y,X[:,i,t+1],u,t,θ)
         #w[i] *= pdf(f(X[:,i],t,θ),Xn)
         #w[i] *= pdf(g(Xn,t,θ),y)
         w[i,t+1] -= ξ[i]
-        w[i,t+1] -= logpdf(dq,X[:,i,t+1])
+        w[i,t+1] -= proposal_logpdf(m,X[:,i,t+1],X[:,i,t],y,u,t,θ)
 
         
     end
@@ -104,7 +105,7 @@ function initialize_particles(::Type{FilteringParticleContainer},m::StateSpaceMo
     #x0 = rand(μ0(θ),N)
     T = length(Y)
 
-    x0 = rand(initial_distribution(m,θ),N)
+    x0 = initial_rand(m,θ,N)
     X0 = zeros(size(x0,1),N,T+1)
     X0[:,:,1] = x0[:,:]
         
