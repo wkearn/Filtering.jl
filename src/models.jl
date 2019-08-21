@@ -11,6 +11,24 @@ export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel,
 
 abstract type StateSpaceModel end
 
+# Default definitions of the modeling interface functions
+initial_rand(m::StateSpaceModel,θ,N) = rand(initial_distribution(m,θ),N)
+initial_logpdf(m::StateSpaceModel,x,θ) = logpdf(initial_distribution(m,θ),x)
+
+initial_gradient!(dg,m::StateSpaceModel,x,θ) = ForwardDiff.gradient!(dg,θ->initial_logpdf(m,x,θ),θ)
+
+transition_rand(m::StateSpaceModel,x,u,t,θ) = rand(transition_distribution(m,x,u,t,θ))
+transition_logpdf(m::StateSpaceModel,xn,x,u,t,θ) = logpdf(transition_distribution(m,x,u,t,θ),xn)
+
+observation_rand(m::StateSpaceModel,x,u,t,θ) = rand(observation_distribution(m,x,u,t,θ))
+observation_logpdf(m::StateSpaceModel,y,x,u,t,θ) = logpdf(observation_distribution(m,x,u,t,θ),y)
+
+ssm_gradient!(dg,m::StateSpaceModel,xn,x,y,u,t,θ) = ForwardDiff.gradient!(dg,θ->transition_logpdf(m,xn,x,u,t,θ) + observation_logpdf(m,y,x,u,t,θ))
+
+proposal_rand(m::StateSpaceModel,x,y,u,t,θ) = rand(proposal_distribution(m,x,y,u,t,θ))
+proposal_rand!(xn,m::StateSpaceModel,x,y,u,t,θ) = rand!(proposal_distribution(m,x,y,u,t,θ),xn)
+proposal_logpdf(m::StateSpaceModel,xn,x,y,u,t,θ) = logpdf(proposal_distribution(m,x,y,u,t,θ),xn)
+
 """
 A linear, time-invariant state space model
 
@@ -47,9 +65,6 @@ function initial_distribution(m::LinearStateSpaceModel,θ0)
     MvNormal(μ0,Σ0)
 end
 
-initial_rand(m::LinearStateSpaceModel,θ) = rand(initial_distribution(m,θ))
-initial_rand(m::LinearStateSpaceModel,θ,N) = rand(initial_distribution(m,θ),N)
-
 function transition_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
     F = m.F(θ0)
     G = m.G(θ0)
@@ -59,9 +74,6 @@ function transition_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
     MvNormal(F*x+G*u,Θ*Q*Θ')
 end
 
-transition_rand(m::LinearStateSpaceModel,x,u,t,θ) = rand(transition_distribution(m,x,u,t,θ))
-transition_logpdf(m::LinearStateSpaceModel,xn,x,u,t,θ) = logpdf(transition_distribution(m,x,u,t,θ),xn)
-
 function observation_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
     H = m.H(θ0)
     Γ = m.Γ(θ0)
@@ -70,16 +82,9 @@ function observation_distribution(m::LinearStateSpaceModel,x,u,t,θ0)
     MvNormal(H*x + Γ*u,R)
 end
 
-observation_rand(m::LinearStateSpaceModel,x,u,t,θ) = rand(observation_distribution(m,x,u,t,θ))
-observation_logpdf(m::LinearStateSpaceModel,y,x,u,t,θ) = logpdf(observation_distribution(m,x,u,t,θ),y)
-
 function proposal_distribution(m::LinearStateSpaceModel,x,y,u,t,θ)
     transition_distribution(m,x,u,t,θ)
 end
-
-proposal_rand(m::LinearStateSpaceModel,x,y,u,t,θ) = rand(proposal_distribution(m,x,y,u,t,θ))
-proposal_rand!(xn,m::LinearStateSpaceModel,x,y,u,t,θ) = rand!(proposal_distribution(m,x,y,u,t,θ),xn)
-proposal_logpdf(m::LinearStateSpaceModel,xn,x,y,u,t,θ) = logpdf(proposal_distribution(m,x,y,u,t,θ),xn)
 
 function weight_function(m::LinearStateSpaceModel,x,y,u,t,θ)
     0.0
@@ -229,21 +234,12 @@ struct ProposalStateSpaceModel <: StateSpaceModel
 end
 
 initial_distribution(m::ProposalStateSpaceModel,θ) = m.μ0(θ)
-initial_rand(m::ProposalStateSpaceModel,θ) = rand(initial_distribution(m,θ))
-initial_rand(m::ProposalStateSpaceModel,θ,N) = rand(initial_distribution(m,θ),N)
 
 transition_distribution(m::ProposalStateSpaceModel,x,u,t,θ) = m.f(x,u,t,θ)
-transition_rand(m::ProposalStateSpaceModel,x,u,t,θ) = rand(transition_distribution(m,x,u,t,θ))
-transition_logpdf(m::ProposalStateSpaceModel,xn,x,u,t,θ) = logpdf(transition_distribution(m,x,u,t,θ),xn)
 
 observation_distribution(m::ProposalStateSpaceModel,x,u,t,θ) = m.g(x,u,t,θ)
-observation_rand(m::ProposalStateSpaceModel,x,u,t,θ) = rand(observation_distribution(m,x,u,t,θ))
-observation_logpdf(m::ProposalStateSpaceModel,y,x,u,t,θ) = logpdf(observation_distribution(m,x,u,t,θ),y)
 
 proposal_distribution(m::ProposalStateSpaceModel,x,y,u,t,θ) = m.q(x,y,u,t,θ)
-proposal_rand(m::ProposalStateSpaceModel,x,y,u,t,θ) = rand(proposal_distribution(m,x,y,u,t,θ))
-proposal_rand!(xn,m::ProposalStateSpaceModel,x,y,u,t,θ) = rand!(proposal_distribution(m,x,y,u,t,θ),xn)
-proposal_logpdf(m::ProposalStateSpaceModel,xn,x,y,u,t,θ) = logpdf(proposal_distribution(m,x,y,u,t,θ),xn)
 
 weight_function(m::ProposalStateSpaceModel,x,y,u,t,θ) = m.ξ(x,y,u,t,θ)
 
