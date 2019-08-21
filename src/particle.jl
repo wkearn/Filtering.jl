@@ -2,8 +2,6 @@
 # Filtering distribution
 # This does not save trajectories, but saves weights and particles at each time step
 # Thus each corresponds to the filtering distribution.
-using Random
-
 export particle_filter, particle_smoother
 
 abstract type ParticleContainer <: AbstractArray{Float64,1}
