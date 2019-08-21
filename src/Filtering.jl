@@ -1,6 +1,14 @@
 module Filtering
 
-using LinearAlgebra, Statistics, Optim, ProgressMeter
+using LinearAlgebra,
+    Statistics,
+    Optim,
+    ProgressMeter,
+    StatsBase,
+    DiffResults,
+    Distributions,
+    Logging,
+    Random
 
 include("models.jl")
 include("filter.jl")
@@ -8,7 +16,7 @@ include("smoother.jl")
 include("em.jl")
 include("resampling.jl")
 include("particle.jl")
-include("score_particle.jl")
+include("score_filter.jl")
 #include("bare_particle.jl")
 #include("gradient_particle.jl") # This may be outdated
 #include("online_particle.jl")
