@@ -8,7 +8,9 @@ using LinearAlgebra,
     DiffResults,
     Distributions,
     Logging,
-    Random
+    Random,
+    ForwardDiff,
+    StatsFuns
 
 include("models.jl")
 include("filter.jl")
