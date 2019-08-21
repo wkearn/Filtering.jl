@@ -19,7 +19,7 @@ Base.getindex(ps::ScoreParticleContainer,i::Int) = ps.X[:,i]
 Base.setindex!(ps::ScoreParticleContainer,v,i::Int) = ps.X[:,i] = v
 Base.IndexStyle(ps::ScoreParticleContainer) = IndexLinear()
 
-score(ps::ScoreParticleContainer) = ps.S
+StatsBase.score(ps::ScoreParticleContainer) = ps.S
 StatsBase.loglikelihood(ps::ScoreParticleContainer) = ps.ℓ[end]
 
 resample!(ps::ScoreParticleContainer,m,t,θ,y,u,sample_function=resample_stratified) = resample!(ScoreParticleContainer,ps.X,ps.w,ps.α,ps.w[:,t],m,t,θ,y,u,sample_function)
@@ -46,7 +46,7 @@ function propagate!(::Type{ScoreParticleContainer},X,w,α,ℓ,S,dg,ξ,Σ,m,t,θ,
         proposal_rand!(view(X,:,i,t+1),m,X[:,i,t],y,u,t,θ)
 
         # We will need to define this more clearly
-        dg = _ssm_gradient!(dg)
+        dg = ssm_gradient!(dg,m,X[:,i,t+1],X[:,i,t],y,u,t,θ)
         
         w[i,t+1] = w[i,t]
         # _ssm_gradient!(...) should also calculate the
@@ -67,7 +67,7 @@ function propagate!(::Type{ScoreParticleContainer},X,w,α,ℓ,S,dg,ξ,Σ,m,t,θ,
     ℓn = log(sum(exp,w[:,t+1]))
     ℓ[t+1] = ℓ[t] + ℓn - log(length(ξ)) + log(Σ)
     w[:,t+1] .-= ℓn
-    S[:] .= (α[:,:,t+1]*exp.(w))
+    S[:] .= (α[:,:,t+1]*exp.(w[:,t+1]))
 end
 
 function step(ps::ScoreParticleContainer,m::StateSpaceModel,t,θ,y,u;sample_function=resample_stratified,λ=0.95)
@@ -133,12 +133,12 @@ function initialize_particles(::Type{ScoreParticleContainer},m::StateSpaceModel,
 
     for i in 1:N
         # TODO: Implement this
-        dg = _initial_gradient!(dg)
+        dg = initial_gradient!(dg,m,X0[:,i,1],θ)
 
         α[:,i,1] = DiffResults.gradient(dg)
     end
 
-    S = α[:,:,1] * exp.(w)
+    S = α[:,:,1] * exp.(w[:,1])
 
     ScoreParticleContainer(X0,w,α,ℓ,S,dg)
 end
