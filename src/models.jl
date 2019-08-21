@@ -1,5 +1,3 @@
-using Distributions
-
 export StateSpaceModel, LinearStateSpaceModel, TimeVariantLinearStateSpaceModel, GenericStateSpaceModel, ProposalStateSpaceModel, BootstrapStateSpaceModel, initial_distribution, transition_distribution, observation_distribution, proposal_distribution, weight_function,
     initial_mean,
     initial_covariance,

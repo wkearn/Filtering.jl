@@ -1,5 +1,3 @@
-using Logging
-
 export elbo, em
 
 function elbo(ks::KalmanSmoother,z,θ,build)
