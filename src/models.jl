@@ -23,7 +23,7 @@ transition_logpdf(m::StateSpaceModel,xn,x,u,t,θ) = logpdf(transition_distributi
 observation_rand(m::StateSpaceModel,x,u,t,θ) = rand(observation_distribution(m,x,u,t,θ))
 observation_logpdf(m::StateSpaceModel,y,x,u,t,θ) = logpdf(observation_distribution(m,x,u,t,θ),y)
 
-ssm_gradient!(dg,m::StateSpaceModel,xn,x,y,u,t,θ) = ForwardDiff.gradient!(dg,θ->transition_logpdf(m,xn,x,u,t,θ) + observation_logpdf(m,y,x,u,t,θ))
+ssm_gradient!(dg,m::StateSpaceModel,xn,x,y,u,t,θ) = ForwardDiff.gradient!(dg,θ->transition_logpdf(m,xn,x,u,t,θ) + observation_logpdf(m,y,x,u,t,θ),θ)
 
 proposal_rand(m::StateSpaceModel,x,y,u,t,θ) = rand(proposal_distribution(m,x,y,u,t,θ))
 proposal_rand!(xn,m::StateSpaceModel,x,y,u,t,θ) = rand!(proposal_distribution(m,x,y,u,t,θ),xn)
