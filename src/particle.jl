@@ -133,8 +133,7 @@ function particle_smoother(m::StateSpaceModel,θ,Y,pf::FilteringParticleContaine
         for j in 1:B
             for i in 1:N
             # This is quite slow
-            # We still need u!
-                wsmooth[i] += logpdf(transition_distribution(m,pf.X[:,i,t+1],u[t+1],t,θ),x[:,t+2,j])
+                wsmooth[i] += transition_logpdf(m,x[:,t+2,j],pf.X[:,i,t+1],u[t+1],t,θ)
             end
         
             x[:,t+1,j] = pf.X[:,sample_function(exp.(wsmooth)./sum(exp,wsmooth),1),t+1]
