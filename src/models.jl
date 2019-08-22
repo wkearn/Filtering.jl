@@ -266,3 +266,13 @@ function simulate(m::ProposalStateSpaceModel,θ,N,u=fill([0.0],N))
 end
 
 (m::ProposalStateSpaceModel)(θ,N) = simulate(m,θ,N)
+
+function simulate(m::StateSpaceModel,θ,N,u=fill([0.0],N))
+    X = fill(initial_rand(m,θ),N+1)
+    Y = fill(observation_rand(m,X[1],u[1],0,θ),N)
+    for t in 1:N
+        X[t+1] =  transition_rand(m,X[t],u[t],t,θ)
+        Y[t] = observation_rand(m,X[t+1],u[t],t,θ)
+    end
+    X,Y
+end
