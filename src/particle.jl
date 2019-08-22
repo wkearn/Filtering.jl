@@ -19,6 +19,8 @@ Base.getindex(ps::FilteringParticleContainer,i::Int) = ps.X[:,i]
 Base.setindex!(ps::FilteringParticleContainer,v,i::Int) = ps.X[:,i] = v
 Base.IndexStyle(ps::FilteringParticleContainer) = IndexLinear()
 
+StatsBase.loglikelihood(ps::FilteringParticleContainer) = ps.ℓ[end]
+
 resample!(ps::FilteringParticleContainer,m,t,θ,y,u,sample_function=resample_stratified) = resample!(FilteringParticleContainer,ps.X,ps.w,ps.w[:,t],m,t,θ,y,u,sample_function)
 
 function resample!(::Type{FilteringParticleContainer},X,w,ξs,m,t,θ,y,u,sample_function)
